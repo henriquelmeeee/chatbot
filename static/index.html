@@ -50,26 +50,40 @@
     <div class="input-get-response">
         <small>Envie sua mensagem para o ChatBot digitando abaixo.</small>
         <br>
-        <input type="text" class="border" placeholder="{{placeholder}}">
+        <input type="text" class="border" placeholder="{{placeholder}}" id="userinput">
         <br>
         <div class="send-message">
-            <button type="submit" class="btn btn-primary">Enviar mensagem</button>
+            <button type="submit" onclick="get_from_api()" class="btn btn-primary">Enviar mensagem</button>
         </div>
     </div>
-    <div class="fetch-response">
-        <div class="card">
-            <div class="card-body">
-                <div class="text">
-                    <small style="margin-top: -5px;">Resposta da API.</small>
-                </div>
-            </div>
-        </div>
+    <div class="fetch-response" id="fetch-response">
     </div>
 </body>
 
 <script>
-
-
-
+    function get_from_api(){
+        if(document.getElementById("userinput").value == ''){
+            alert('Você precisa digitar algo!')
+        }else{
+            fetch('/api/v1/response/', {
+            method: 'post',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({"message": document.getElementById("userinput").value})
+            })
+            .then (response => response.json())
+            .then (data => {
+                var resposta = data.response
+                var div = document.getElementById("fetch-response")
+                if(String(resposta) == 'undefined'){
+                    create_new_response()
+                }else{
+                    div.innerHTML += '<div class="card"><div class="card-body"><div class="text"><small style="margin-top: -5px;">' + String(resposta) + '</small></div></div></div>'
+                }
+            })
+        }
+    }
 </script>
 </html>
